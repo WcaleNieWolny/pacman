@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'kr.entree.spigradle' version '2.2.4'
+    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "org.jetbrains.kotlin.jvm" version "1.6.10"
+}
+
+group = 'pl.wolny'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
+    maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "17"
+        //freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
+}
+
+tasks {
+    build.dependsOn shadowJar
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
+    implementation "net.kyori:adventure-text-minimessage:4.2.0-SNAPSHOT"
+    //implementation 'com.google.code.gson:gson:2.9.0'
+    //implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
+    //compileOnly 'com.github.sirblobman.combatlogx:api:11.0.0.0-SNAPSHOT'
+}
+
+def pluginName = "WolnyPacman"
+
+spigot {
+    name = pluginName
+    authors = ["WcaleNieWolny"]
+    version = project.version
+    website = "https://github.com/WcaleNieWolny/"
+    apiVersion = "1.18"
+    commands {
+        pacman {
+            description 'main event command'
+            permission 'pacman.admin'
+            permissionMessage 'You do not have the permission.'
+        }
+    }
+    permissions {
+        create("pacman.admin") {
+            description = "Allows pacman command"
+            defaults = "op"
+        }
+    }
+}
