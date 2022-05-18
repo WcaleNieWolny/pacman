@@ -10,7 +10,7 @@ private val pacmanController = PacmanController()
 private val pacmanCommand = PacmanCommand(pacmanController)
 
 @SpigotPlugin
-class PacmanMain: JavaPlugin() {
+class PacmanMain : JavaPlugin() {
     override fun onEnable() {
         getCommand("pacman")?.setExecutor(pacmanCommand)
         val pluginManager = Bukkit.getPluginManager()
