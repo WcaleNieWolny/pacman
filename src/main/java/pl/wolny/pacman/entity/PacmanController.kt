@@ -62,18 +62,11 @@ class PacmanController : Listener, GameObject {
         val pacmanBlocks = pacmanEntity.blocks
         val centerBlock = getCenterPacmanBlock(pacmanEntity)
 
-        if(checkCollisions(pacmanBlocks, centerBlock, direction)){
-            return
-        }
-
         pacmanBlocks.forEach {
             pacmanBlocksDataCopy[it.location] = it.blockData.clone()
         }
 
-        if (pacmanEntity.direction != direction) {
-            if(checkCollisions(pacmanBlocks, centerBlock.getRelative(direction.vector), direction)){
-                return
-            }
+        if (pacmanEntity.direction != direction && !checkCollisions(pacmanBlocks, centerBlock.getRelative(direction.vector), direction)) {
             generateRotatedPacman(
                 getCenterPacmanBlock(pacmanEntity).getRelative(direction.vector),
                 direction,
@@ -88,9 +81,13 @@ class PacmanController : Listener, GameObject {
             return
         }
 
+        if(checkCollisions(pacmanBlocks, centerBlock, pacmanEntity.direction)){
+            return
+        }
+
         pacmanBlocks.forEach {
             val relative =
-                it.getRelative(direction.vector)
+                it.getRelative(pacmanEntity.direction.vector)
             relative.blockData = pacmanBlocksDataCopy[it.location]!!
             pacmanBlockCopy.add(relative)
         }
