@@ -45,6 +45,7 @@ spigot {
     version = project.version
     website = "https://github.com/WcaleNieWolny/"
     apiVersion = "1.18"
+    load POST_WORLD
     commands {
         pacman {
             description 'main event command'

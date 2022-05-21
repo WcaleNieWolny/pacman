@@ -13,17 +13,20 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.util.Vector
 import pl.wolny.pacman.extension.getRelative
+import pl.wolny.pacman.game.GameObject
 import java.io.InvalidObjectException
 import java.util.*
 
-class PacmanController : Listener {
+class PacmanController : Listener, GameObject {
 
     private val pacmanMap: MutableMap<UUID, PacmanEntity> = mutableMapOf()
+    var running = false
+
 
     fun registerPacman(block: Block, player: Player) {
 
         val blockList = mutableListOf<Block>()
-        val direction = PacmanDirection.FORWARD
+        val direction = PacmanDirection.RIGHT
 
         generateRotatedPacman(block, direction, blockList)
         val entity = PacmanEntity(blockList, block.location, direction)
@@ -33,6 +36,9 @@ class PacmanController : Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private fun onHotbarItemChange(event: PlayerItemHeldEvent) {
+        if(!running){
+            return
+        }
         val item = event.player.inventory.getItem(event.newSlot) ?: return
         if (!item.itemMeta.hasCustomModelData()) {
             return
@@ -46,7 +52,7 @@ class PacmanController : Listener {
         val itemCustomModel = item.itemMeta.customModelData
         val direction = PacmanDirection.fromID(itemCustomModel)
 
-        move(direction, pacman)
+        pacman.nextDirection = direction
 
     }
 
@@ -56,7 +62,6 @@ class PacmanController : Listener {
         val pacmanBlocks = pacmanEntity.blocks
 
         if(checkCollisions(pacmanEntity, direction)){
-            println("COLLISION")
             return
         }
 
@@ -144,8 +149,19 @@ class PacmanController : Listener {
     }
 
     private fun checkCollisions(pacmanEntity: PacmanEntity, direction: PacmanDirection): Boolean{
-        val vector = direction.vector.clone().multiply(3)
-        return getCenterPacmanBlock(pacmanEntity).getRelative(vector).type != Material.AIR
+        val vector = direction.vector.clone().multiply(2)
+        for (block in pacmanEntity.blocks) {
+            if(block.getRelative(vector).type == Material.BLUE_WOOL){
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun tick() {
+        for (pair in pacmanMap) {
+            move(pair.value.nextDirection, pair.value)
+        }
     }
 
 }

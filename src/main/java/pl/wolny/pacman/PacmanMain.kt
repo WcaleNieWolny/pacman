@@ -5,15 +5,17 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import pl.wolny.pacman.commands.PacmanCommand
 import pl.wolny.pacman.entity.PacmanController
+import pl.wolny.pacman.game.GameService
 
-private val pacmanController = PacmanController()
-private val pacmanCommand = PacmanCommand(pacmanController)
 
 @SpigotPlugin
 class PacmanMain : JavaPlugin() {
+
+    private val gameService = GameService(this)
+    private val pacmanCommand = PacmanCommand(gameService)
+
     override fun onEnable() {
+        gameService.init()
         getCommand("pacman")?.setExecutor(pacmanCommand)
-        val pluginManager = Bukkit.getPluginManager()
-        pluginManager.registerEvents(pacmanController, this)
     }
 }

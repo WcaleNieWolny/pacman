@@ -6,8 +6,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import pl.wolny.pacman.entity.PacmanController
 import pl.wolny.pacman.formatMessage
+import pl.wolny.pacman.game.GameService
 
-class PacmanCommand(private val pacmanController: PacmanController) : CommandExecutor {
+class PacmanCommand(private val gameService: GameService) : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         val arg = args.getOrNull(0)
         if (arg == null) {
@@ -20,13 +21,16 @@ class PacmanCommand(private val pacmanController: PacmanController) : CommandExe
                     sender.sendMessage(formatMessage("<red>Nie jesteś graczem aby to zrobić!"))
                     return true
                 }
-                val block = sender.getTargetBlock(5)
-                if (block == null) {
-                    sender.sendMessage(formatMessage("<red>Nie patrzysz na blok!"))
-                    return true
-                }
-                pacmanController.registerPacman(block, sender)
+                gameService.prepare(sender)
                 sender.sendMessage(formatMessage("<green>Rejestruję pacmana!"))
+            }
+            "start" -> {
+                gameService.start()
+                sender.sendMessage(formatMessage("<green>Startuję grę!"))
+            }
+            "halt" -> {
+                gameService.halt()
+                sender.sendMessage(formatMessage("<green>Stopuję pacmana!"))
             }
             else -> {
                 sender.sendMessage(formatMessage("<red>Złe argumenty!"))
