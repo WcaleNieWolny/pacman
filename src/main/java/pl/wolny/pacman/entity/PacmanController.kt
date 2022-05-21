@@ -60,8 +60,9 @@ class PacmanController : Listener, GameObject {
         val pacmanBlocksDataCopy = mutableMapOf<Location, BlockData>()
         val pacmanBlockCopy = mutableListOf<Block>()
         val pacmanBlocks = pacmanEntity.blocks
+        val centerBlock = getCenterPacmanBlock(pacmanEntity)
 
-        if(checkCollisions(pacmanEntity, direction)){
+        if(checkCollisions(pacmanBlocks, centerBlock, direction)){
             return
         }
 
@@ -70,6 +71,9 @@ class PacmanController : Listener, GameObject {
         }
 
         if (pacmanEntity.direction != direction) {
+            if(checkCollisions(pacmanBlocks, centerBlock.getRelative(direction.vector), direction)){
+                return
+            }
             generateRotatedPacman(
                 getCenterPacmanBlock(pacmanEntity).getRelative(direction.vector),
                 direction,
@@ -81,7 +85,6 @@ class PacmanController : Listener, GameObject {
             pacmanEntity.direction = direction
             pacmanEntity.blocks.clear()
             pacmanEntity.blocks.addAll(pacmanBlockCopy)
-            getCenterPacmanBlock(pacmanEntity)
             return
         }
 
@@ -148,12 +151,24 @@ class PacmanController : Listener, GameObject {
         throw InvalidObjectException("Pacman Blocks does not contain center block! This should never happen!")
     }
 
-    private fun checkCollisions(pacmanEntity: PacmanEntity, direction: PacmanDirection): Boolean{
+    private fun checkCollisions(blocks: List<Block>, centre: Block, direction: PacmanDirection): Boolean{
         val vector = direction.vector.clone().multiply(2)
-        for (block in pacmanEntity.blocks) {
+        for (block in blocks) {
             if(block.getRelative(vector).type == Material.BLUE_WOOL){
                 return true
             }
+        }
+        if(centre.getRelative(2, 0, 2).type == Material.BLUE_WOOL){
+            return true
+        }
+        if(centre.getRelative(-2, 0, 2).type == Material.BLUE_WOOL){
+            return true
+        }
+        if(centre.getRelative(2, 0, -2).type == Material.BLUE_WOOL){
+            return true
+        }
+        if(centre.getRelative(-2, 0, -2).type == Material.BLUE_WOOL){
+            return true
         }
         return false
     }
