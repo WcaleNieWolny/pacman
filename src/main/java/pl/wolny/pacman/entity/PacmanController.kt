@@ -55,6 +55,10 @@ class PacmanController : Listener {
         val pacmanBlockCopy = mutableListOf<Block>()
         val pacmanBlocks = pacmanEntity.blocks
 
+        if(checkCollisions(pacmanEntity, direction)){
+            println("COLLISION")
+            return
+        }
 
         pacmanBlocks.forEach {
             pacmanBlocksDataCopy[it.location] = it.blockData.clone()
@@ -137,6 +141,11 @@ class PacmanController : Listener {
             return block
         }
         throw InvalidObjectException("Pacman Blocks does not contain center block! This should never happen!")
+    }
+
+    private fun checkCollisions(pacmanEntity: PacmanEntity, direction: PacmanDirection): Boolean{
+        val vector = direction.vector.clone().multiply(3)
+        return getCenterPacmanBlock(pacmanEntity).getRelative(vector).type != Material.AIR
     }
 
 }
