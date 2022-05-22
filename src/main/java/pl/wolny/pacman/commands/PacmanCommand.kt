@@ -7,8 +7,10 @@ import org.bukkit.entity.Player
 import pl.wolny.pacman.entity.PacmanController
 import pl.wolny.pacman.formatMessage
 import pl.wolny.pacman.game.GameService
+import pl.wolny.pacman.powerup.PowerUp
+import pl.wolny.pacman.powerup.PowerUpComponent
 
-class PacmanCommand(private val gameService: GameService) : CommandExecutor {
+class PacmanCommand(private val gameService: GameService, private val powerUpComponent: PowerUpComponent) : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         val arg = args.getOrNull(0)
         if (arg == null) {
@@ -31,6 +33,9 @@ class PacmanCommand(private val gameService: GameService) : CommandExecutor {
             "halt" -> {
                 gameService.halt()
                 sender.sendMessage(formatMessage("<green>Stopuję pacmana!"))
+            }
+            "p1" -> {
+                powerUpComponent.activate(PowerUp.KILLABLE_PACMAN)
             }
             else -> {
                 sender.sendMessage(formatMessage("<red>Złe argumenty!"))

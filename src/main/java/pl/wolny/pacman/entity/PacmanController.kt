@@ -176,4 +176,12 @@ class PacmanController : Listener, GameObject {
         }
     }
 
+    fun clear() {
+        pacmanMap.forEach { _,v ->
+            v.blocks.forEach{
+                it.type = Material.AIR
+            }
+        }
+    }
+
 }

@@ -12,8 +12,8 @@ class GameTimer(private val plugin: JavaPlugin) {
     private val asyncObjectList = mutableListOf<GameObject>()
 
     fun start(){
-        syncTask = generateRunnable(syncObjectList).runTaskTimer(plugin, 3, 3)
-        asyncTask = generateRunnable(asyncObjectList).runTaskTimer(plugin, 3, 3)
+        syncTask = generateRunnable(syncObjectList).runTaskTimer(plugin, 5, 2)
+        asyncTask = generateRunnable(asyncObjectList).runTaskTimer(plugin, 5, 2)
     }
 
     fun stop(){
