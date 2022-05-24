@@ -18,6 +18,5 @@ class PacmanMain : JavaPlugin() {
     override fun onEnable() {
         gameService.init()
         getCommand("pacman")?.setExecutor(pacmanCommand)
-        Bukkit.getPluginManager().registerEvents(KillablePacmanListener(), this)
     }
 }

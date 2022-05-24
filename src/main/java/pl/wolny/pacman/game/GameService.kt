@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import pl.wolny.pacman.entity.PacmanController
 import pl.wolny.pacman.powerup.PowerUpComponent
+import pl.wolny.pacman.powerup.event.KillablePacmanListener
 
 class GameService(private val plugin: JavaPlugin) {
 
@@ -16,6 +17,7 @@ class GameService(private val plugin: JavaPlugin) {
 
     fun init(){
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)
+        Bukkit.getPluginManager().registerEvents(KillablePacmanListener(pacmanController), plugin)
     }
 
     fun prepare(player: Player){
