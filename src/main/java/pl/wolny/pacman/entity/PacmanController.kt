@@ -141,7 +141,11 @@ class PacmanController : Listener, GameObject {
                             changedBlock.blockData = blockData
                         }
                     } else {
-                        changedBlock.type = Material.GOLD_BLOCK //TODO: USE DIAMOND BLOCK
+                        if(!killablePacman){
+                            changedBlock.type = Material.GOLD_BLOCK
+                        }else{
+                            changedBlock.type = Material.DIAMOND_BLOCK
+                        }
                     }
                     blockList.add(changedBlock)
                 }
