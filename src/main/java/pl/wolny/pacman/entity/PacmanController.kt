@@ -24,7 +24,7 @@ class PacmanController : Listener, GameObject {
     var killablePacman = false
     private var killablePacmanChange = false
 
-    private val pacmanMap: MutableMap<UUID, PacmanEntity> = mutableMapOf()
+    val pacmanMap: MutableMap<UUID, PacmanEntity> = mutableMapOf()
     var running = false
 
 
