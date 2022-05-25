@@ -1,10 +1,9 @@
-package pl.wolny.pacman.commands
+package pl.wolny.pacman.command
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import pl.wolny.pacman.entity.PacmanController
 import pl.wolny.pacman.formatMessage
 import pl.wolny.pacman.game.GameService
 import pl.wolny.pacman.powerup.PowerUp
