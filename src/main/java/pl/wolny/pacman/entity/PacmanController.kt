@@ -17,9 +17,14 @@ import pl.wolny.pacman.game.GameObject
 import java.io.InvalidObjectException
 import java.util.*
 
+//THAT IS A FRICKING SPAGETTI
+
 class PacmanController : Listener, GameObject {
 
-    private val pacmanMap: MutableMap<UUID, PacmanEntity> = mutableMapOf()
+    var killablePacman = false
+    private var killablePacmanChange = false
+
+    val pacmanMap: MutableMap<UUID, PacmanEntity> = mutableMapOf()
     var running = false
 
 
@@ -85,6 +90,17 @@ class PacmanController : Listener, GameObject {
             return
         }
 
+        if(killablePacmanChange){
+            generateRotatedPacman(getCenterPacmanBlock(pacmanEntity).getRelative(pacmanEntity.direction.vector), pacmanEntity.direction, pacmanBlockCopy)
+            pacmanBlocks.filterNot { pacmanBlockCopy.contains(it) }.forEach {
+                it.type = Material.AIR
+            }
+            killablePacmanChange = false
+            pacmanEntity.blocks.clear()
+            pacmanEntity.blocks.addAll(pacmanBlockCopy)
+            return
+        }
+
         pacmanBlocks.forEach {
             val relative =
                 it.getRelative(pacmanEntity.direction.vector)
@@ -101,7 +117,7 @@ class PacmanController : Listener, GameObject {
         pacmanEntity.blocks.addAll(pacmanBlockCopy)
     }
 
-    private fun generateRotatedPacman(
+    fun generateRotatedPacman(
         block: Block,
         direction: PacmanDirection,
         blockList: MutableList<Block>
@@ -114,14 +130,22 @@ class PacmanController : Listener, GameObject {
                     val specialBlock = direction.specialBlocks[Vector(x, y, z)]
 
                     if (specialBlock != null) {
-                        changedBlock.type = specialBlock.material
-                        if (specialBlock.axis != null) {
+                        if(!killablePacman){
+                            changedBlock.type = specialBlock.materials.first
+                        }else{
+                            changedBlock.type = specialBlock.materials.second
+                        }
+                        if (specialBlock.axis != null && changedBlock.blockData is Orientable) {
                             val blockData = changedBlock.blockData
                             (blockData as Orientable).axis = specialBlock.axis
                             changedBlock.blockData = blockData
                         }
                     } else {
-                        changedBlock.type = Material.GOLD_BLOCK
+                        if(!killablePacman){
+                            changedBlock.type = Material.GOLD_BLOCK
+                        }else{
+                            changedBlock.type = Material.DIAMOND_BLOCK
+                        }
                     }
                     blockList.add(changedBlock)
                 }
@@ -182,6 +206,10 @@ class PacmanController : Listener, GameObject {
                 it.type = Material.AIR
             }
         }
+    }
+
+    fun handleKillable() {
+        killablePacmanChange = true
     }
 
 }
