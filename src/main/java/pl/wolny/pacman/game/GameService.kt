@@ -6,6 +6,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import pl.wolny.pacman.entity.PacmanController
+import pl.wolny.pacman.point.PointComponent
 import pl.wolny.pacman.powerup.PowerUpComponent
 import pl.wolny.pacman.powerup.event.KillablePacmanListener
 
@@ -14,6 +15,7 @@ class GameService(private val plugin: JavaPlugin) {
     private val gameTimer: GameTimer = GameTimer(plugin)
     private val pacmanController = PacmanController()
     val powerUpComponent = PowerUpComponent()
+    private val pointComponent = PointComponent(plugin)
 
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)
@@ -22,6 +24,7 @@ class GameService(private val plugin: JavaPlugin) {
 
     fun prepare(player: Player) {
         pacmanController.registerPacman(Bukkit.getWorld("world")!!.getBlockAt(-93, -57, 73), player)
+        pointComponent.prepare()
         giveItems(player)
     }
 
