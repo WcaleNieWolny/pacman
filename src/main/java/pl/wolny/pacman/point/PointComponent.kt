@@ -23,21 +23,16 @@ import java.util.*
 
 
 //TODO: GameObject
-class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
+class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Location>) : Listener, GameObject {
 
-    val spawnPoints = mutableListOf<Location>()
+
     private val playerPoints: MutableList<PowerPlayer> = mutableListOf()
     private val pickedPoints: MutableList<Vector> = mutableListOf()
     private val namespacedKey = NamespacedKey(plugin, "PACMAN_LOC")
     private var time = 600
+    var running = false
 
     fun prepare() {
-        val world = Bukkit.getWorld("world")
-        world?.forEachIn(Location(world, 0.0, -59.0, 0.0), Location(world, -168.0, -59.0, 139.0)) { block ->
-            if (block.type == Material.STONE_BUTTON) {
-                spawnPoints.add(block.location)
-            }
-        }
         dropItems(true)
         preparePointsMap()
         prepareScoreBoard()
@@ -74,6 +69,7 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
                 entity.remove()
             }
         }
+        playerPoints.clear()
     }
 
     private fun prepareScoreBoard() {
@@ -92,6 +88,9 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
 
     @EventHandler
     private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
+        if(!running){
+            return
+        }
         val player = event.player
         if (ScoreHelper.hasScore(player)) {
             ScoreHelper.removeScore(player)
@@ -100,6 +99,9 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
 
     @EventHandler
     private fun onPlayerPickupEvent(event: EntityPickupItemEvent) {
+        if(!running){
+            return
+        }
         val player = event.entity
         val item = event.item.itemStack
 
@@ -144,7 +146,6 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
         time -= 2
         if (time == 0) {
             dropItems()
-            println("YES!")
             time = 300
         }
     }
