@@ -15,7 +15,7 @@ class GameService(private val plugin: JavaPlugin) {
     private val gameTimer: GameTimer = GameTimer(plugin)
     private val pacmanController = PacmanController()
     val powerUpComponent = PowerUpComponent()
-    private val pointComponent = PointComponent(plugin)
+    private val pointComponent = PointComponent(plugin, powerUpComponent)
 
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)

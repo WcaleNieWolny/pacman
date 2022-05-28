@@ -17,13 +17,16 @@ import org.bukkit.util.Vector
 import pl.wolny.pacman.extension.LocationDataStringToVector
 import pl.wolny.pacman.extension.forEachIn
 import pl.wolny.pacman.extension.toDataString
+import pl.wolny.pacman.formatMessage
 import pl.wolny.pacman.game.GameObject
 import pl.wolny.pacman.point.scoreboard.ScoreHelper
+import pl.wolny.pacman.powerup.PowerUp
+import pl.wolny.pacman.powerup.PowerUpComponent
 import java.util.*
 
 
 //TODO: GameObject
-class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
+class PointComponent(plugin: JavaPlugin, private val powerUpComponent: PowerUpComponent) : Listener, GameObject {
 
     val spawnPoints = mutableListOf<Location>()
     private val playerPoints: MutableList<PowerPlayer> = mutableListOf()
@@ -34,7 +37,7 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
     fun prepare() {
         val world = Bukkit.getWorld("world")
         world?.forEachIn(Location(world, 0.0, -59.0, 0.0), Location(world, -168.0, -59.0, 139.0)) { block ->
-            if (block.type == Material.STONE_BUTTON) {
+            if (block.type == Material.STONE_BUTTON || block.type == Material.CRIMSON_BUTTON) {
                 spawnPoints.add(block.location)
             }
         }
@@ -45,9 +48,13 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
     }
 
     fun dropItems(all: Boolean = false) {
-        val item = ItemStack(Material.GOLD_NUGGET, 1)
-        val meta = item.itemMeta
         for (it in spawnPoints) {
+            val item = when(it.block.type){
+                Material.STONE_BUTTON -> ItemStack(Material.GOLD_NUGGET, 1)
+                Material.CRIMSON_BUTTON -> ItemStack(Material.IRON_NUGGET, 1)
+                else -> ItemStack(Material.GOLD_NUGGET, 1)
+            }
+            val meta = item.itemMeta
             //TODO: Loop all items in pickedPoints and spawn
             if (!all) {
                 val vector = Vector(it.x, it.y, it.z)
@@ -106,7 +113,7 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
         if (player !is Player) {
             return
         }
-        if (item.type != Material.GOLD_NUGGET) {
+        if (item.type != Material.GOLD_NUGGET && item.type != Material.IRON_NUGGET) {
             return
         }
         if (!item.itemMeta.persistentDataContainer.has(namespacedKey)) {
@@ -123,10 +130,16 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
 
         event.isCancelled = true
         event.item.remove()
-        val powerPlayer = playerPoints.filter { it.uuid == player.uniqueId }[0]
-        powerPlayer.point = powerPlayer.point + 1
-        playerPoints.sortBy { it.point }
-        renderScoreBoard()
+
+        if(item.type == Material.GOLD_NUGGET){
+            val powerPlayer = playerPoints.filter { it.uuid == player.uniqueId }[0]
+            powerPlayer.point = powerPlayer.point + 1
+            playerPoints.sortBy { it.point }
+            renderScoreBoard()
+        }else{
+            powerUpComponent.activate(PowerUp.values().random(), player)
+        }
+
     }
 
     private fun renderScoreBoard() {
@@ -144,7 +157,6 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
         time -= 2
         if (time == 0) {
             dropItems()
-            println("YES!")
             time = 300
         }
     }

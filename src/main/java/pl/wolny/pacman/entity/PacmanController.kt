@@ -172,7 +172,7 @@ class PacmanController : Listener, GameObject {
                         it == BlockFace.UP ||
                         it == BlockFace.DOWN
             }) {
-                if (block.getRelative(face).type == Material.AIR || block.getRelative(face).type == Material.STONE_BUTTON) {
+                if (block.getRelative(face).type == Material.AIR || block.getRelative(face).type == Material.STONE_BUTTON || block.getRelative(face).type == Material.CRIMSON_BUTTON) {
                     continue@blockLoop
                 }
             }
