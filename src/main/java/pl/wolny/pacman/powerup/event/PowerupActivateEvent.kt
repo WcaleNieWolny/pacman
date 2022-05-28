@@ -1,10 +1,11 @@
 package pl.wolny.pacman.powerup.event
 
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import pl.wolny.pacman.powerup.PowerUp
 
-class PowerupActivateEvent(val powerUp: PowerUp) : Event() {
+class PowerupActivateEvent(val powerUp: PowerUp, val player: Player? = null) : Event() {
     companion object {
         private val handlers = HandlerList()
 
