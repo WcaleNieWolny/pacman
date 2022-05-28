@@ -83,7 +83,7 @@ class PacmanCollisionListener(private val spawnPoints: MutableList<Location>, pr
         Bukkit.getServer().onlinePlayers.forEach{
             player.spawnParticle(Particle.DRAGON_BREATH, loc, 1500, 0.25, 0.1, 0.25 )
         }
-        Bukkit.broadcast(formatMessage("☠ <red>${player.name} odchodzi z hukiem! ( <dark_red>♥<white>x<green>${health}"))
+        Bukkit.broadcast(formatMessage("☠ <red>${player.name} odchodzi z hukiem! (<dark_red>♥<white>x<green>${health}<red>)"))
 
     }
 }

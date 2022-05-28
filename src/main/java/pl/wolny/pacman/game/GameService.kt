@@ -23,14 +23,15 @@ class GameService(private val plugin: JavaPlugin) {
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)
         Bukkit.getPluginManager().registerEvents(KillablePacmanListener(pacmanController), plugin)
+        Bukkit.getPluginManager().registerEvents(pointComponent, plugin)
+        Bukkit.getPluginManager().registerEvents(pacmanCollisionListener, plugin)
+        gameSpawnPointsComponent.init()
     }
 
     fun prepare(player: Player) {
         //TODO: Move events to init
         pacmanController.registerPacman(Bukkit.getWorld("world")!!.getBlockAt(-93, -57, 73), player)
         pointComponent.prepare()
-        pointComponent.running = true
-        pacmanCollisionListener.running = true
         giveItems(player)
     }
 
@@ -41,6 +42,8 @@ class GameService(private val plugin: JavaPlugin) {
         gameTimer.register(pointComponent)
         gameTimer.start()
         pacmanController.running = true
+        pointComponent.running = true
+        pacmanCollisionListener.running = true
     }
 
     fun halt() {

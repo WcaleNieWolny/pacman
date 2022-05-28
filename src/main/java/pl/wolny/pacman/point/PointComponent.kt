@@ -49,7 +49,6 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
 
     fun dropItems(all: Boolean = false) {
         val item = ItemStack(Material.GOLD_NUGGET, 1)
-        val meta = item.itemMeta
         for (it in spawnPoints) {
             val item = when(it.block.type){
                 Material.STONE_BUTTON -> ItemStack(Material.GOLD_NUGGET, 1)
@@ -166,7 +165,6 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         time -= 2
         if (time == 0) {
             dropItems()
-            println("YES!")
             time = 300
         }
     }

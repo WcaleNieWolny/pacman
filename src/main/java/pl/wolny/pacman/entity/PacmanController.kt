@@ -89,6 +89,8 @@ class PacmanController : Listener, GameObject {
             pacmanEntity.direction = direction
             pacmanEntity.blocks.clear()
             pacmanEntity.blocks.addAll(pacmanBlockCopy)
+            pacmanEntity.location.add(direction.vector)
+            checkPlayerCollision(pacmanEntity)
             return
         }
 
@@ -108,6 +110,8 @@ class PacmanController : Listener, GameObject {
             killablePacmanChange = false
             pacmanEntity.blocks.clear()
             pacmanEntity.blocks.addAll(pacmanBlockCopy)
+            pacmanEntity.location.add(pacmanEntity.direction.vector)
+            checkPlayerCollision(pacmanEntity)
             return
         }
 
@@ -122,9 +126,10 @@ class PacmanController : Listener, GameObject {
             it.type = Material.AIR
         }
 
-
+        pacmanEntity.location.add(pacmanEntity.direction.vector)
         pacmanEntity.blocks.clear()
         pacmanEntity.blocks.addAll(pacmanBlockCopy)
+        checkPlayerCollision(pacmanEntity)
     }
 
     fun generateRotatedPacman(
