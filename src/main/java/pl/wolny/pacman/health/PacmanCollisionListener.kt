@@ -12,8 +12,13 @@ import pl.wolny.pacman.formatMessage
 
 class PacmanCollisionListener: Listener {
 
+    var running = false
+
     @EventHandler
     fun onPacmanCollision(event: PacmanCollisionEvent){
+        if(!running){
+            return
+        }
         val player = event.player
         if(player.health <= 10){
             val firework: Firework = player.world.spawnEntity(
