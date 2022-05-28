@@ -23,7 +23,7 @@ import java.util.*
 
 
 //TODO: GameObject
-class PointComponent(plugin: JavaPlugin): Listener, GameObject {
+class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
 
     val spawnPoints = mutableListOf<Location>()
     private val playerPoints: MutableList<PowerPlayer> = mutableListOf()
@@ -31,10 +31,10 @@ class PointComponent(plugin: JavaPlugin): Listener, GameObject {
     private val namespacedKey = NamespacedKey(plugin, "PACMAN_LOC")
     private var time = 600
 
-    fun prepare(){
+    fun prepare() {
         val world = Bukkit.getWorld("world")
-        world?.forEachIn(Location(world,0.0, -59.0, 0.0), Location(world,-168.0, -59.0, 139.0)){block ->
-            if(block.type == Material.STONE_BUTTON){
+        world?.forEachIn(Location(world, 0.0, -59.0, 0.0), Location(world, -168.0, -59.0, 139.0)) { block ->
+            if (block.type == Material.STONE_BUTTON) {
                 spawnPoints.add(block.location)
             }
         }
@@ -44,48 +44,48 @@ class PointComponent(plugin: JavaPlugin): Listener, GameObject {
 
     }
 
-    fun dropItems(all: Boolean = false){
+    fun dropItems(all: Boolean = false) {
         val item = ItemStack(Material.GOLD_NUGGET, 1)
         val meta = item.itemMeta
         for (it in spawnPoints) {
             //TODO: Loop all items in pickedPoints and spawn
-            if(!all){
+            if (!all) {
                 val vector = Vector(it.x, it.y, it.z)
-                if(!pickedPoints.contains(vector)){
+                if (!pickedPoints.contains(vector)) {
                     continue
                 }
             }
-            meta.persistentDataContainer.set(namespacedKey, PersistentDataType.STRING, it.toDataString() )
+            meta.persistentDataContainer.set(namespacedKey, PersistentDataType.STRING, it.toDataString())
             item.itemMeta = meta
             val loc = it.clone()
             loc.add(Vector(0.5, 0.75, 0.5))
             val dropItem = it.world.dropItem(loc, item)
             dropItem.setGravity(false)
             dropItem.setWillAge(true)
-            dropItem.velocity = Vector(0,0,0)
+            dropItem.velocity = Vector(0, 0, 0)
         }
 
         pickedPoints.clear()
     }
 
-    fun clear(){
+    fun clear() {
         for (entity in Bukkit.getWorld("world")!!.entities) {
-            if(entity is Item){
+            if (entity is Item) {
                 entity.remove()
             }
         }
     }
 
-    private fun prepareScoreBoard(){
-        Bukkit.getServer().onlinePlayers.forEach{
+    private fun prepareScoreBoard() {
+        Bukkit.getServer().onlinePlayers.forEach {
             val scoreboard = ScoreHelper.createScore(it)
             scoreboard.setTitle("Punkty")
         }
         renderScoreBoard()
     }
 
-    private fun preparePointsMap(){
-        Bukkit.getServer().onlinePlayers.forEach{ player ->
+    private fun preparePointsMap() {
+        Bukkit.getServer().onlinePlayers.forEach { player ->
             playerPoints.add(PowerPlayer(player.uniqueId, player.name))
         }
     }
@@ -113,7 +113,12 @@ class PointComponent(plugin: JavaPlugin): Listener, GameObject {
             return
         }
 
-        val vector = LocationDataStringToVector(item.itemMeta.persistentDataContainer.get(namespacedKey, PersistentDataType.STRING)!!)
+        val vector = LocationDataStringToVector(
+            item.itemMeta.persistentDataContainer.get(
+                namespacedKey,
+                PersistentDataType.STRING
+            )!!
+        )
         pickedPoints.add(vector)
 
         event.isCancelled = true
@@ -124,7 +129,7 @@ class PointComponent(plugin: JavaPlugin): Listener, GameObject {
         renderScoreBoard()
     }
 
-    private fun renderScoreBoard(){
+    private fun renderScoreBoard() {
         for (player in Bukkit.getServer().onlinePlayers) {
             val scoreHelper = ScoreHelper.getByPlayer(player) ?: continue
             var id = 1
@@ -137,7 +142,7 @@ class PointComponent(plugin: JavaPlugin): Listener, GameObject {
 
     override fun tick() {
         time -= 2
-        if(time == 0){
+        if (time == 0) {
             dropItems()
             println("YES!")
             time = 300

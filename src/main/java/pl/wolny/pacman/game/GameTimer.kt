@@ -11,26 +11,26 @@ class GameTimer(private val plugin: JavaPlugin) {
     private val syncObjectList = mutableListOf<GameObject>()
     private val asyncObjectList = mutableListOf<GameObject>()
 
-    fun start(){
+    fun start() {
         syncTask = generateRunnable(syncObjectList).runTaskTimer(plugin, 5, 2)
         asyncTask = generateRunnable(asyncObjectList).runTaskTimer(plugin, 5, 2)
     }
 
-    fun stop(){
+    fun stop() {
         syncTask?.cancel()
         asyncTask?.cancel()
     }
 
-    fun register(gameObject: GameObject, async: Boolean = false){
-        if(async){
+    fun register(gameObject: GameObject, async: Boolean = false) {
+        if (async) {
             syncObjectList.add(gameObject)
-        }else{
+        } else {
             asyncObjectList.add(gameObject)
         }
     }
 
     private fun generateRunnable(list: MutableList<GameObject>): BukkitRunnable {
-        return object : BukkitRunnable(){
+        return object : BukkitRunnable() {
             override fun run() {
                 for (gameObject in list) {
                     gameObject.tick()

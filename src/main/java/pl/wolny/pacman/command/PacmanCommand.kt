@@ -9,7 +9,8 @@ import pl.wolny.pacman.game.GameService
 import pl.wolny.pacman.powerup.PowerUp
 import pl.wolny.pacman.powerup.PowerUpComponent
 
-class PacmanCommand(private val gameService: GameService, private val powerUpComponent: PowerUpComponent) : CommandExecutor {
+class PacmanCommand(private val gameService: GameService, private val powerUpComponent: PowerUpComponent) :
+    CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         val arg = args.getOrNull(0)
         if (arg == null) {
