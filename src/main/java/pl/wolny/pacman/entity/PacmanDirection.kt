@@ -17,7 +17,10 @@ enum class PacmanDirection(val vector: Vector, val specialBlocks: Map<Vector, Sp
     BACK(
         Vector(-1, 0, 0), mapOf(
             Pair(Vector(-1.0, 0.0, 1.0), SpecialBlock(Pair(Material.ACACIA_LOG, Material.STRIPPED_ACACIA_LOG), Axis.X)),
-            Pair(Vector(-1.0, 0.0, -1.0), SpecialBlock(Pair(Material.ACACIA_LOG, Material.STRIPPED_ACACIA_LOG), Axis.X)),
+            Pair(
+                Vector(-1.0, 0.0, -1.0),
+                SpecialBlock(Pair(Material.ACACIA_LOG, Material.STRIPPED_ACACIA_LOG), Axis.X)
+            ),
             Pair(Vector(-1.0, -1.0, 0.0), SpecialBlock(Pair(Material.BIRCH_LOG, Material.STRIPPED_BIRCH_LOG), Axis.X)),
             Pair(Vector(-1.0, -1.0, -1.0), SpecialBlock(Pair(Material.SPRUCE_LOG, Material.DIAMOND_BLOCK), Axis.X)),
             Pair(Vector(-1.0, -1.0, 1.0), SpecialBlock(Pair(Material.DARK_OAK_LOG, Material.DIAMOND_BLOCK), Axis.X))
@@ -25,7 +28,10 @@ enum class PacmanDirection(val vector: Vector, val specialBlocks: Map<Vector, Sp
     ),
     LEFT(
         Vector(0, 0, -1), mapOf(
-            Pair(Vector(-1.0, 0.0, -1.0), SpecialBlock(Pair(Material.ACACIA_LOG, Material.STRIPPED_ACACIA_LOG), Axis.Z)),
+            Pair(
+                Vector(-1.0, 0.0, -1.0),
+                SpecialBlock(Pair(Material.ACACIA_LOG, Material.STRIPPED_ACACIA_LOG), Axis.Z)
+            ),
             Pair(Vector(1.0, 0.0, -1.0), SpecialBlock(Pair(Material.ACACIA_LOG, Material.STRIPPED_ACACIA_LOG), Axis.Z)),
             Pair(Vector(0.0, -1.0, -1.0), SpecialBlock(Pair(Material.BIRCH_LOG, Material.STRIPPED_BIRCH_LOG), Axis.Z)),
             Pair(Vector(-1.0, -1.0, -1.0), SpecialBlock(Pair(Material.DARK_OAK_LOG, Material.DIAMOND_BLOCK), Axis.Z)),

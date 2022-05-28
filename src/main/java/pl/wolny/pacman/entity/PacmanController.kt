@@ -41,7 +41,7 @@ class PacmanController : Listener, GameObject {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private fun onHotbarItemChange(event: PlayerItemHeldEvent) {
-        if(!running){
+        if (!running) {
             return
         }
         val item = event.player.inventory.getItem(event.newSlot) ?: return
@@ -71,7 +71,12 @@ class PacmanController : Listener, GameObject {
             pacmanBlocksDataCopy[it.location] = it.blockData.clone()
         }
 
-        if (pacmanEntity.direction != direction && !checkCollisions(pacmanBlocks, centerBlock.getRelative(direction.vector), direction)) {
+        if (pacmanEntity.direction != direction && !checkCollisions(
+                pacmanBlocks,
+                centerBlock.getRelative(direction.vector),
+                direction
+            )
+        ) {
             generateRotatedPacman(
                 getCenterPacmanBlock(pacmanEntity).getRelative(direction.vector),
                 direction,
@@ -86,12 +91,16 @@ class PacmanController : Listener, GameObject {
             return
         }
 
-        if(checkCollisions(pacmanBlocks, centerBlock, pacmanEntity.direction)){
+        if (checkCollisions(pacmanBlocks, centerBlock, pacmanEntity.direction)) {
             return
         }
 
-        if(killablePacmanChange){
-            generateRotatedPacman(getCenterPacmanBlock(pacmanEntity).getRelative(pacmanEntity.direction.vector), pacmanEntity.direction, pacmanBlockCopy)
+        if (killablePacmanChange) {
+            generateRotatedPacman(
+                getCenterPacmanBlock(pacmanEntity).getRelative(pacmanEntity.direction.vector),
+                pacmanEntity.direction,
+                pacmanBlockCopy
+            )
             pacmanBlocks.filterNot { pacmanBlockCopy.contains(it) }.forEach {
                 it.type = Material.AIR
             }
@@ -130,9 +139,9 @@ class PacmanController : Listener, GameObject {
                     val specialBlock = direction.specialBlocks[Vector(x, y, z)]
 
                     if (specialBlock != null) {
-                        if(!killablePacman){
+                        if (!killablePacman) {
                             changedBlock.type = specialBlock.materials.first
-                        }else{
+                        } else {
                             changedBlock.type = specialBlock.materials.second
                         }
                         if (specialBlock.axis != null && changedBlock.blockData is Orientable) {
@@ -141,9 +150,9 @@ class PacmanController : Listener, GameObject {
                             changedBlock.blockData = blockData
                         }
                     } else {
-                        if(!killablePacman){
+                        if (!killablePacman) {
                             changedBlock.type = Material.GOLD_BLOCK
-                        }else{
+                        } else {
                             changedBlock.type = Material.DIAMOND_BLOCK
                         }
                     }
@@ -155,13 +164,13 @@ class PacmanController : Listener, GameObject {
 
     private fun getCenterPacmanBlock(pacman: PacmanEntity): Block {
         blockLoop@ for (block in pacman.blocks) {
-            for (face  in BlockFace.values().filter{
+            for (face in BlockFace.values().filter {
                 it == BlockFace.NORTH ||
-                it == BlockFace.EAST ||
-                it == BlockFace.SOUTH ||
-                it == BlockFace.WEST ||
-                it == BlockFace.UP ||
-                it == BlockFace.DOWN
+                        it == BlockFace.EAST ||
+                        it == BlockFace.SOUTH ||
+                        it == BlockFace.WEST ||
+                        it == BlockFace.UP ||
+                        it == BlockFace.DOWN
             }) {
                 if (block.getRelative(face).type == Material.AIR || block.getRelative(face).type == Material.STONE_BUTTON) {
                     continue@blockLoop
@@ -172,23 +181,23 @@ class PacmanController : Listener, GameObject {
         throw InvalidObjectException("Pacman Blocks does not contain center block! This should never happen!")
     }
 
-    private fun checkCollisions(blocks: List<Block>, centre: Block, direction: PacmanDirection): Boolean{
+    private fun checkCollisions(blocks: List<Block>, centre: Block, direction: PacmanDirection): Boolean {
         val vector = direction.vector.clone().multiply(2)
         for (block in blocks) {
-            if(block.getRelative(vector).type == Material.BLUE_WOOL){
+            if (block.getRelative(vector).type == Material.BLUE_WOOL) {
                 return true
             }
         }
-        if(centre.getRelative(2, 0, 2).type == Material.BLUE_WOOL){
+        if (centre.getRelative(2, 0, 2).type == Material.BLUE_WOOL) {
             return true
         }
-        if(centre.getRelative(-2, 0, 2).type == Material.BLUE_WOOL){
+        if (centre.getRelative(-2, 0, 2).type == Material.BLUE_WOOL) {
             return true
         }
-        if(centre.getRelative(2, 0, -2).type == Material.BLUE_WOOL){
+        if (centre.getRelative(2, 0, -2).type == Material.BLUE_WOOL) {
             return true
         }
-        if(centre.getRelative(-2, 0, -2).type == Material.BLUE_WOOL){
+        if (centre.getRelative(-2, 0, -2).type == Material.BLUE_WOOL) {
             return true
         }
         return false
@@ -201,8 +210,8 @@ class PacmanController : Listener, GameObject {
     }
 
     fun clear() {
-        pacmanMap.forEach { _,v ->
-            v.blocks.forEach{
+        pacmanMap.forEach { _, v ->
+            v.blocks.forEach {
                 it.type = Material.AIR
             }
         }
