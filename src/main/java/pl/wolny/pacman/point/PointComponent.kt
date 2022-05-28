@@ -26,9 +26,8 @@ import java.util.*
 
 
 //TODO: GameObject
-class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Location>) : Listener, GameObject {
+class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Location>, private val powerUpComponent: PowerUpComponent) : Listener, GameObject {
 
-    val spawnPoints = mutableListOf<Location>()
     private val playerPoints: MutableList<PowerPlayer> = mutableListOf()
     private val pickedPoints: MutableList<Vector> = mutableListOf()
     private val namespacedKey = NamespacedKey(plugin, "PACMAN_LOC")

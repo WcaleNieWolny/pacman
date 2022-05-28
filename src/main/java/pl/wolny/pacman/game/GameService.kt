@@ -16,19 +16,13 @@ class GameService(private val plugin: JavaPlugin) {
     private val gameTimer: GameTimer = GameTimer(plugin)
     private val pacmanController = PacmanController()
     val powerUpComponent = PowerUpComponent()
-    private val pointComponent = PointComponent(plugin, powerUpComponent)
     private val gameSpawnPointsComponent = GameSpawnPointsComponent()
+    private val pointComponent = PointComponent(plugin, gameSpawnPointsComponent.spawnPoints, powerUpComponent)
     private val pacmanCollisionListener = PacmanCollisionListener(gameSpawnPointsComponent.spawnPoints, pacmanController)
 
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)
         Bukkit.getPluginManager().registerEvents(KillablePacmanListener(pacmanController), plugin)
-    }
-
-    fun prepare(player: Player) {
-        Bukkit.getPluginManager().registerEvents(pointComponent, plugin)
-        Bukkit.getPluginManager().registerEvents(pacmanCollisionListener, plugin)
-        gameSpawnPointsComponent.init()
     }
 
     fun prepare(player: Player) {

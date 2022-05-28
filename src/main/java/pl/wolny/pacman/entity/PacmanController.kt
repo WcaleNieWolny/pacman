@@ -1,9 +1,9 @@
 package pl.wolny.pacman.entity
 
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Orientable
 import org.bukkit.entity.Player
@@ -11,10 +11,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemHeldEvent
+import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import pl.wolny.pacman.extension.getRelative
 import pl.wolny.pacman.game.GameObject
-import java.io.InvalidObjectException
+import pl.wolny.pacman.health.PacmanCollisionEvent
 import java.util.*
 
 //THAT IS A FRICKING SPAGETTI
