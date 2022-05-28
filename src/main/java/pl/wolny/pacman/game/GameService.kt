@@ -18,7 +18,7 @@ class GameService(private val plugin: JavaPlugin) {
     val powerUpComponent = PowerUpComponent()
     private val gameSpawnPointsComponent = GameSpawnPointsComponent()
     private val pointComponent = PointComponent(plugin, gameSpawnPointsComponent.spawnPoints)
-    private val pacmanCollisionListener = PacmanCollisionListener()
+    private val pacmanCollisionListener = PacmanCollisionListener(gameSpawnPointsComponent.spawnPoints, pacmanController)
 
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)

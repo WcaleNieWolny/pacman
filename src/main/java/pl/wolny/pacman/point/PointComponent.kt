@@ -146,7 +146,6 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         time -= 2
         if (time == 0) {
             dropItems()
-            println("YES!")
             time = 300
         }
     }
