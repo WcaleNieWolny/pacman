@@ -19,6 +19,8 @@ class GameTimer(private val plugin: JavaPlugin) {
     fun stop() {
         syncTask?.cancel()
         asyncTask?.cancel()
+        syncObjectList.clear()
+        asyncObjectList.clear()
     }
 
     fun register(gameObject: GameObject, async: Boolean = false) {

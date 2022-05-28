@@ -1,9 +1,9 @@
 package pl.wolny.pacman.entity
 
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Orientable
 import org.bukkit.entity.Player
@@ -11,10 +11,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemHeldEvent
+import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import pl.wolny.pacman.extension.getRelative
 import pl.wolny.pacman.game.GameObject
-import java.io.InvalidObjectException
+import pl.wolny.pacman.health.PacmanCollisionEvent
 import java.util.*
 
 //THAT IS A FRICKING SPAGETTI
@@ -88,6 +89,8 @@ class PacmanController : Listener, GameObject {
             pacmanEntity.direction = direction
             pacmanEntity.blocks.clear()
             pacmanEntity.blocks.addAll(pacmanBlockCopy)
+            pacmanEntity.location = pacmanEntity.location.add(direction.vector)
+            checkPlayerCollision(pacmanEntity)
             return
         }
 
@@ -107,6 +110,8 @@ class PacmanController : Listener, GameObject {
             killablePacmanChange = false
             pacmanEntity.blocks.clear()
             pacmanEntity.blocks.addAll(pacmanBlockCopy)
+            pacmanEntity.location = pacmanEntity.location.add(pacmanEntity.direction.vector)
+            checkPlayerCollision(pacmanEntity)
             return
         }
 
@@ -124,6 +129,8 @@ class PacmanController : Listener, GameObject {
 
         pacmanEntity.blocks.clear()
         pacmanEntity.blocks.addAll(pacmanBlockCopy)
+        pacmanEntity.location = pacmanEntity.location.add(pacmanEntity.direction.vector)
+        checkPlayerCollision(pacmanEntity)
     }
 
     fun generateRotatedPacman(
@@ -163,22 +170,7 @@ class PacmanController : Listener, GameObject {
     }
 
     private fun getCenterPacmanBlock(pacman: PacmanEntity): Block {
-        blockLoop@ for (block in pacman.blocks) {
-            for (face in BlockFace.values().filter {
-                it == BlockFace.NORTH ||
-                        it == BlockFace.EAST ||
-                        it == BlockFace.SOUTH ||
-                        it == BlockFace.WEST ||
-                        it == BlockFace.UP ||
-                        it == BlockFace.DOWN
-            }) {
-                if (block.getRelative(face).type == Material.AIR || block.getRelative(face).type == Material.STONE_BUTTON) {
-                    continue@blockLoop
-                }
-            }
-            return block
-        }
-        throw InvalidObjectException("Pacman Blocks does not contain center block! This should never happen!")
+        return pacman.location.block
     }
 
     private fun checkCollisions(blocks: List<Block>, centre: Block, direction: PacmanDirection): Boolean {
@@ -203,6 +195,19 @@ class PacmanController : Listener, GameObject {
         return false
     }
 
+    fun checkPlayerCollision(pacman: PacmanEntity){
+        val loc1 = pacman.location.clone()
+        val loc2 = pacman.location.clone()
+        val vector = Vector(3, 1, 3)
+        loc1.add(vector)
+        loc2.subtract(vector)
+        pacman.location.world.getNearbyEntities(BoundingBox.of(loc1, loc2)){
+            it is Player
+        }.map { it as Player }.forEach{
+            Bukkit.getPluginManager().callEvent(PacmanCollisionEvent(it, pacman))
+        }
+    }
+
     override fun tick() {
         for (pair in pacmanMap) {
             move(pair.value.nextDirection, pair.value)
@@ -210,7 +215,7 @@ class PacmanController : Listener, GameObject {
     }
 
     fun clear() {
-        pacmanMap.forEach { _, v ->
+        pacmanMap.forEach { (_, v) ->
             v.blocks.forEach {
                 it.type = Material.AIR
             }

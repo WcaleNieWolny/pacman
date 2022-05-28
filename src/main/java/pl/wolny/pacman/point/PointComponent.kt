@@ -74,6 +74,8 @@ class PointComponent(plugin: JavaPlugin) : Listener, GameObject {
                 entity.remove()
             }
         }
+        spawnPoints.clear()
+        playerPoints.clear()
     }
 
     private fun prepareScoreBoard() {
