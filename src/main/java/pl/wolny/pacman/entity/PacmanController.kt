@@ -55,6 +55,12 @@ class PacmanController : Listener, GameObject {
         }
 
         val pacman = pacmanMap[event.player.uniqueId] ?: return
+
+        if(pacman.freeze != 0){
+            event.isCancelled = true
+            return
+        }
+
         val itemCustomModel = item.itemMeta.customModelData
         val direction = PacmanDirection.fromID(itemCustomModel)
 
@@ -89,7 +95,7 @@ class PacmanController : Listener, GameObject {
             pacmanEntity.direction = direction
             pacmanEntity.blocks.clear()
             pacmanEntity.blocks.addAll(pacmanBlockCopy)
-            pacmanEntity.location = pacmanEntity.location.add(direction.vector)
+            pacmanEntity.location.add(direction.vector)
             checkPlayerCollision(pacmanEntity)
             return
         }
@@ -110,7 +116,7 @@ class PacmanController : Listener, GameObject {
             killablePacmanChange = false
             pacmanEntity.blocks.clear()
             pacmanEntity.blocks.addAll(pacmanBlockCopy)
-            pacmanEntity.location = pacmanEntity.location.add(pacmanEntity.direction.vector)
+            pacmanEntity.location.add(pacmanEntity.direction.vector)
             checkPlayerCollision(pacmanEntity)
             return
         }
@@ -126,10 +132,9 @@ class PacmanController : Listener, GameObject {
             it.type = Material.AIR
         }
 
-
+        pacmanEntity.location.add(pacmanEntity.direction.vector)
         pacmanEntity.blocks.clear()
         pacmanEntity.blocks.addAll(pacmanBlockCopy)
-        pacmanEntity.location = pacmanEntity.location.add(pacmanEntity.direction.vector)
         checkPlayerCollision(pacmanEntity)
     }
 
@@ -198,7 +203,7 @@ class PacmanController : Listener, GameObject {
     fun checkPlayerCollision(pacman: PacmanEntity){
         val loc1 = pacman.location.clone()
         val loc2 = pacman.location.clone()
-        val vector = Vector(3, 1, 3)
+        val vector = Vector(3, 3, 3)
         loc1.add(vector)
         loc2.subtract(vector)
         pacman.location.world.getNearbyEntities(BoundingBox.of(loc1, loc2)){
@@ -210,12 +215,16 @@ class PacmanController : Listener, GameObject {
 
     override fun tick() {
         for (pair in pacmanMap) {
+            if(pair.value.freeze != 0){
+                pair.value.freeze -=2
+                continue
+            }
             move(pair.value.nextDirection, pair.value)
         }
     }
 
     fun clear() {
-        pacmanMap.forEach { (_, v) ->
+        pacmanMap.forEach { _, v ->
             v.blocks.forEach {
                 it.type = Material.AIR
             }
@@ -224,6 +233,10 @@ class PacmanController : Listener, GameObject {
 
     fun handleKillable() {
         killablePacmanChange = true
+    }
+
+    fun freezePacman(pacmanEntity: PacmanEntity) {
+        pacmanEntity.freeze = 60
     }
 
 }

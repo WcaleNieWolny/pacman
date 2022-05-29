@@ -17,14 +17,16 @@ import org.bukkit.util.Vector
 import pl.wolny.pacman.extension.LocationDataStringToVector
 import pl.wolny.pacman.extension.forEachIn
 import pl.wolny.pacman.extension.toDataString
+import pl.wolny.pacman.formatMessage
 import pl.wolny.pacman.game.GameObject
 import pl.wolny.pacman.point.scoreboard.ScoreHelper
+import pl.wolny.pacman.powerup.PowerUp
+import pl.wolny.pacman.powerup.PowerUpComponent
 import java.util.*
 
 
 //TODO: GameObject
-class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Location>) : Listener, GameObject {
-
+class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Location>, private val powerUpComponent: PowerUpComponent) : Listener, GameObject {
 
     private val playerPoints: MutableList<PowerPlayer> = mutableListOf()
     private val pickedPoints: MutableList<Vector> = mutableListOf()
@@ -33,6 +35,12 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
     var running = false
 
     fun prepare() {
+        val world = Bukkit.getWorld("world")
+        world?.forEachIn(Location(world, 0.0, -59.0, 0.0), Location(world, -168.0, -59.0, 139.0)) { block ->
+            if (block.type == Material.STONE_BUTTON || block.type == Material.CRIMSON_BUTTON) {
+                spawnPoints.add(block.location)
+            }
+        }
         dropItems(true)
         preparePointsMap()
         prepareScoreBoard()
@@ -41,8 +49,13 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
 
     fun dropItems(all: Boolean = false) {
         val item = ItemStack(Material.GOLD_NUGGET, 1)
-        val meta = item.itemMeta
         for (it in spawnPoints) {
+            val item = when(it.block.type){
+                Material.STONE_BUTTON -> ItemStack(Material.GOLD_NUGGET, 1)
+                Material.CRIMSON_BUTTON -> ItemStack(Material.IRON_NUGGET, 1)
+                else -> ItemStack(Material.GOLD_NUGGET, 1)
+            }
+            val meta = item.itemMeta
             //TODO: Loop all items in pickedPoints and spawn
             if (!all) {
                 val vector = Vector(it.x, it.y, it.z)
@@ -86,6 +99,13 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         }
     }
 
+    fun addPoints(player: Player, points: Int = 1){
+        val powerPlayer = playerPoints.filter { it.uuid == player.uniqueId }[0]
+        powerPlayer.point = powerPlayer.point + points
+        playerPoints.sortBy { it.point }
+        renderScoreBoard()
+    }
+
     @EventHandler
     private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         if(!running){
@@ -108,7 +128,7 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         if (player !is Player) {
             return
         }
-        if (item.type != Material.GOLD_NUGGET) {
+        if (item.type != Material.GOLD_NUGGET && item.type != Material.IRON_NUGGET) {
             return
         }
         if (!item.itemMeta.persistentDataContainer.has(namespacedKey)) {
@@ -125,10 +145,13 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
 
         event.isCancelled = true
         event.item.remove()
-        val powerPlayer = playerPoints.filter { it.uuid == player.uniqueId }[0]
-        powerPlayer.point = powerPlayer.point + 1
-        playerPoints.sortBy { it.point }
-        renderScoreBoard()
+
+        if(item.type == Material.GOLD_NUGGET){
+            addPoints(player)
+        }else{
+            powerUpComponent.activate(PowerUp.values().random(), player)
+        }
+
     }
 
     private fun renderScoreBoard() {

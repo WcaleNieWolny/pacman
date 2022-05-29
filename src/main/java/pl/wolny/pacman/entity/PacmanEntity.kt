@@ -7,5 +7,6 @@ data class PacmanEntity(
     var blocks: MutableList<Block>,
     var location: Location,
     var direction: PacmanDirection,
-    var nextDirection: PacmanDirection = direction
+    var nextDirection: PacmanDirection = direction,
+    var freeze: Int = 0
 )

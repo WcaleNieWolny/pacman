@@ -10,14 +10,18 @@ import org.bukkit.inventory.ItemStack
 import pl.wolny.pacman.entity.PacmanController
 import pl.wolny.pacman.entity.PacmanDirection
 import pl.wolny.pacman.formatMessage
+import pl.wolny.pacman.powerup.PowerUp
 
 class KillablePacmanListener(private val pacmanController: PacmanController) : Listener {
 
     @EventHandler
     private fun onKillablePacmanDeactivate(event: PowerupDeactivateEvent) {
+        if(event.powerUp != PowerUp.KILLABLE_PACMAN){
+            return
+        }
         pacmanController.killablePacman = false
         pacmanController.handleKillable()
-        Bukkit.broadcast(formatMessage("- > ${event.powerUp}"))
+        Bukkit.broadcast(formatMessage("<red>Pacman odzyskał siły! Uciekaj!"))
 
         Bukkit.getServer().onlinePlayers.forEach { player ->
             player.inventory.remove(Material.SNOWBALL)
@@ -26,9 +30,13 @@ class KillablePacmanListener(private val pacmanController: PacmanController) : L
 
     @EventHandler
     private fun onKillablePacmanActivate(event: PowerupActivateEvent) {
+        if(event.powerUp != PowerUp.KILLABLE_PACMAN){
+            return
+        }
         pacmanController.killablePacman = true
         pacmanController.handleKillable()
-        Bukkit.broadcast(formatMessage("+ > ${event.powerUp}"))
+        Bukkit.broadcast(formatMessage("<green>Pacman jest słaby! Strzel w niego śnieżką aby go zabić!"))
+
         Bukkit.getServer().onlinePlayers.forEach { player ->
             player.inventory.setItem(0, ItemStack(Material.SNOWBALL, 1))
         }
@@ -45,12 +53,14 @@ class KillablePacmanListener(private val pacmanController: PacmanController) : L
                     v.blocks.forEach {
                         it.type = Material.AIR
                     }
+                    val block = Bukkit.getWorld("world")!!.getBlockAt(-93, -57, 73)
                     val blocks = mutableListOf<Block>()
                     pacmanController.generateRotatedPacman(
-                        Bukkit.getWorld("world")!!.getBlockAt(-93, -57, 73),
+                        block,
                         PacmanDirection.RIGHT,
                         blocks
                     )
+                    v.location = block.location //Make sure that pacman does not get teleported to old location
                     v.blocks.clear()
                     v.blocks.addAll(blocks)
                     v.direction = PacmanDirection.RIGHT

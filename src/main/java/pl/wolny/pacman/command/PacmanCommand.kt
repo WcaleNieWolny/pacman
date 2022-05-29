@@ -37,6 +37,27 @@ class PacmanCommand(private val gameService: GameService, private val powerUpCom
             "p1" -> {
                 powerUpComponent.activate(PowerUp.KILLABLE_PACMAN)
             }
+            "p2" -> {
+                if (sender !is Player) {
+                    sender.sendMessage(formatMessage("<red>Nie jesteś graczem aby to zrobić!"))
+                    return true
+                }
+                powerUpComponent.activate(PowerUp.JUMP_BOOST, sender)
+            }
+            "p3" -> {
+                if (sender !is Player) {
+                    sender.sendMessage(formatMessage("<red>Nie jesteś graczem aby to zrobić!"))
+                    return true
+                }
+                powerUpComponent.activate(PowerUp.FREE_POINTS, sender)
+            }
+            "p4" -> {
+                if (sender !is Player) {
+                    sender.sendMessage(formatMessage("<red>Nie jesteś graczem aby to zrobić!"))
+                    return true
+                }
+                powerUpComponent.activate(PowerUp.SWORD, sender)
+            }
             else -> {
                 sender.sendMessage(formatMessage("<red>Złe argumenty!"))
                 return true

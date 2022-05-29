@@ -9,7 +9,10 @@ import pl.wolny.pacman.entity.PacmanController
 import pl.wolny.pacman.health.PacmanCollisionListener
 import pl.wolny.pacman.point.PointComponent
 import pl.wolny.pacman.powerup.PowerUpComponent
+import pl.wolny.pacman.powerup.event.FreePointListener
+import pl.wolny.pacman.powerup.event.JumpBoostListener
 import pl.wolny.pacman.powerup.event.KillablePacmanListener
+import pl.wolny.pacman.powerup.event.SwordListener
 
 class GameService(private val plugin: JavaPlugin) {
 
@@ -17,12 +20,15 @@ class GameService(private val plugin: JavaPlugin) {
     private val pacmanController = PacmanController()
     val powerUpComponent = PowerUpComponent()
     private val gameSpawnPointsComponent = GameSpawnPointsComponent()
-    private val pointComponent = PointComponent(plugin, gameSpawnPointsComponent.spawnPoints)
+    private val pointComponent = PointComponent(plugin, gameSpawnPointsComponent.spawnPoints, powerUpComponent)
     private val pacmanCollisionListener = PacmanCollisionListener(gameSpawnPointsComponent.spawnPoints, pacmanController)
 
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)
         Bukkit.getPluginManager().registerEvents(KillablePacmanListener(pacmanController), plugin)
+        Bukkit.getPluginManager().registerEvents(JumpBoostListener(gameSpawnPointsComponent.spawnPoints), plugin)
+        Bukkit.getPluginManager().registerEvents(FreePointListener(pointComponent), plugin)
+        Bukkit.getPluginManager().registerEvents(SwordListener(), plugin)
         Bukkit.getPluginManager().registerEvents(pointComponent, plugin)
         Bukkit.getPluginManager().registerEvents(pacmanCollisionListener, plugin)
         gameSpawnPointsComponent.init()
@@ -32,8 +38,6 @@ class GameService(private val plugin: JavaPlugin) {
         //TODO: Move events to init
         pacmanController.registerPacman(Bukkit.getWorld("world")!!.getBlockAt(-93, -57, 73), player)
         pointComponent.prepare()
-        pointComponent.running = true
-        pacmanCollisionListener.running = true
         giveItems(player)
     }
 
@@ -44,6 +48,8 @@ class GameService(private val plugin: JavaPlugin) {
         gameTimer.register(pointComponent)
         gameTimer.start()
         pacmanController.running = true
+        pointComponent.running = true
+        pacmanCollisionListener.running = true
     }
 
     fun halt() {
