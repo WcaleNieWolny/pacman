@@ -7,7 +7,7 @@ import pl.wolny.pacman.formatMessage
 import pl.wolny.pacman.point.PointComponent
 import pl.wolny.pacman.powerup.PowerUp
 
-class FreePointListener(private val pointComponent: PointComponent): Listener {
+class FreePointListener(private val pointComponent: PointComponent) : Listener {
     @EventHandler
     private fun onFreePointsActivate(event: PowerupDeactivateEvent) {
         if (event.powerUp != PowerUp.FREE_POINTS) {

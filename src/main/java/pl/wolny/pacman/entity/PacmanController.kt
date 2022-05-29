@@ -56,7 +56,7 @@ class PacmanController : Listener, GameObject {
 
         val pacman = pacmanMap[event.player.uniqueId] ?: return
 
-        if(pacman.freeze != 0){
+        if (pacman.freeze != 0) {
             event.isCancelled = true
             return
         }
@@ -200,23 +200,23 @@ class PacmanController : Listener, GameObject {
         return false
     }
 
-    fun checkPlayerCollision(pacman: PacmanEntity){
+    fun checkPlayerCollision(pacman: PacmanEntity) {
         val loc1 = pacman.location.clone()
         val loc2 = pacman.location.clone()
         val vector = Vector(3, 3, 3)
         loc1.add(vector)
         loc2.subtract(vector)
-        pacman.location.world.getNearbyEntities(BoundingBox.of(loc1, loc2)){
+        pacman.location.world.getNearbyEntities(BoundingBox.of(loc1, loc2)) {
             it is Player
-        }.map { it as Player }.forEach{
+        }.map { it as Player }.forEach {
             Bukkit.getPluginManager().callEvent(PacmanCollisionEvent(it, pacman))
         }
     }
 
     override fun tick() {
         for (pair in pacmanMap) {
-            if(pair.value.freeze != 0){
-                pair.value.freeze -=2
+            if (pair.value.freeze != 0) {
+                pair.value.freeze -= 2
                 continue
             }
             move(pair.value.nextDirection, pair.value)

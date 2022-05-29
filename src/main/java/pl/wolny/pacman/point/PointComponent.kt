@@ -17,7 +17,6 @@ import org.bukkit.util.Vector
 import pl.wolny.pacman.extension.LocationDataStringToVector
 import pl.wolny.pacman.extension.forEachIn
 import pl.wolny.pacman.extension.toDataString
-import pl.wolny.pacman.formatMessage
 import pl.wolny.pacman.game.GameObject
 import pl.wolny.pacman.point.scoreboard.ScoreHelper
 import pl.wolny.pacman.powerup.PowerUp
@@ -26,7 +25,11 @@ import java.util.*
 
 
 //TODO: GameObject
-class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Location>, private val powerUpComponent: PowerUpComponent) : Listener, GameObject {
+class PointComponent(
+    plugin: JavaPlugin,
+    private val spawnPoints: MutableList<Location>,
+    private val powerUpComponent: PowerUpComponent
+) : Listener, GameObject {
 
     private val playerPoints: MutableList<PowerPlayer> = mutableListOf()
     private val pickedPoints: MutableList<Vector> = mutableListOf()
@@ -50,7 +53,7 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
     fun dropItems(all: Boolean = false) {
         val item = ItemStack(Material.GOLD_NUGGET, 1)
         for (it in spawnPoints) {
-            val item = when(it.block.type){
+            val item = when (it.block.type) {
                 Material.STONE_BUTTON -> ItemStack(Material.GOLD_NUGGET, 1)
                 Material.CRIMSON_BUTTON -> ItemStack(Material.IRON_NUGGET, 1)
                 else -> ItemStack(Material.GOLD_NUGGET, 1)
@@ -99,7 +102,7 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         }
     }
 
-    fun addPoints(player: Player, points: Int = 1){
+    fun addPoints(player: Player, points: Int = 1) {
         val powerPlayer = playerPoints.filter { it.uuid == player.uniqueId }[0]
         powerPlayer.point = powerPlayer.point + points
         playerPoints.sortBy { it.point }
@@ -110,7 +113,7 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
 
     @EventHandler
     private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
-        if(!running){
+        if (!running) {
             return
         }
         val player = event.player
@@ -121,7 +124,7 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
 
     @EventHandler
     private fun onPlayerPickupEvent(event: EntityPickupItemEvent) {
-        if(!running){
+        if (!running) {
             return
         }
         val player = event.entity
@@ -148,9 +151,9 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         event.isCancelled = true
         event.item.remove()
 
-        if(item.type == Material.GOLD_NUGGET){
+        if (item.type == Material.GOLD_NUGGET) {
             addPoints(player)
-        }else{
+        } else {
             powerUpComponent.activate(PowerUp.values().random(), player)
         }
 

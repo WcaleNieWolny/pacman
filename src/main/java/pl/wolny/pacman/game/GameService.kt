@@ -62,7 +62,7 @@ class GameService(private val plugin: JavaPlugin) {
     }
 
     private fun prepareServer(player: Player) {
-        Bukkit.getServer().onlinePlayers.forEach{
+        Bukkit.getServer().onlinePlayers.forEach {
             it.addPotionEffect(PotionEffect(PotionEffectType.GLOWING, 9999, 0, true, false))
             it.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 9999, 0, true, false))
             it.teleport(gameSpawnPointsComponent.spawnPoints.random())
@@ -85,10 +85,10 @@ class GameService(private val plugin: JavaPlugin) {
     private fun giveItems(player: Player) {
         val item = ItemStack(Material.PAPER)
         val meta = item.itemMeta
-        for (i in 1..4){
+        for (i in 1..4) {
             meta.setCustomModelData(1)
             item.itemMeta = meta
-            player.inventory.setItem(5+i, item)
+            player.inventory.setItem(5 + i, item)
         }
     }
 

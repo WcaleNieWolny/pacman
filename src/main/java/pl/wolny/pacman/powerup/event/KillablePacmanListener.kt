@@ -17,7 +17,7 @@ class KillablePacmanListener(private val pacmanController: PacmanController) : L
 
     @EventHandler
     private fun onKillablePacmanDeactivate(event: PowerupDeactivateEvent) {
-        if(event.powerUp != PowerUp.KILLABLE_PACMAN){
+        if (event.powerUp != PowerUp.KILLABLE_PACMAN) {
             return
         }
         pacmanController.killablePacman = false
@@ -31,7 +31,7 @@ class KillablePacmanListener(private val pacmanController: PacmanController) : L
 
     @EventHandler
     private fun onKillablePacmanActivate(event: PowerupActivateEvent) {
-        if(event.powerUp != PowerUp.KILLABLE_PACMAN){
+        if (event.powerUp != PowerUp.KILLABLE_PACMAN) {
             return
         }
         pacmanController.killablePacman = true
@@ -68,7 +68,7 @@ class KillablePacmanListener(private val pacmanController: PacmanController) : L
                 }
             }
 
-            Bukkit.getServer().onlinePlayers.forEach{
+            Bukkit.getServer().onlinePlayers.forEach {
                 it.spawnParticle(Particle.EXPLOSION_LARGE, block.location, 400, 0.75, 0.75, 0.75)
             }
         }

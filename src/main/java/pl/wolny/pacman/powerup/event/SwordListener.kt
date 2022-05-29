@@ -15,10 +15,11 @@ import pl.wolny.pacman.point.PointComponent
 import pl.wolny.pacman.powerup.PowerUp
 import kotlin.math.roundToInt
 
-class SwordListener(private val healthComponent: HealthComponent, private val pointComponent: PointComponent): Listener {
+class SwordListener(private val healthComponent: HealthComponent, private val pointComponent: PointComponent) :
+    Listener {
     @EventHandler
     private fun onJumpBoostActivate(event: PowerupActivateEvent) {
-        if(event.powerUp != PowerUp.SWORD){
+        if (event.powerUp != PowerUp.SWORD) {
             return
         }
         val player = event.player ?: return
@@ -33,11 +34,11 @@ class SwordListener(private val healthComponent: HealthComponent, private val po
 
     @EventHandler
     private fun onJumpBoostDeactivate(event: PowerupDeactivateEvent) {
-        if(event.powerUp != PowerUp.SWORD){
+        if (event.powerUp != PowerUp.SWORD) {
             return
         }
 
-        Bukkit.getServer().onlinePlayers.forEach{
+        Bukkit.getServer().onlinePlayers.forEach {
             it.inventory.remove(Material.WOODEN_SWORD)
         }
     }
@@ -49,12 +50,12 @@ class SwordListener(private val healthComponent: HealthComponent, private val po
 
         val loc = victim.location.clone()
 
-        if(attacker !is Player || victim !is Player){
+        if (attacker !is Player || victim !is Player) {
             return
         }
 
         val item = attacker.inventory.itemInMainHand
-        if(item.type != Material.WOODEN_SWORD){
+        if (item.type != Material.WOODEN_SWORD) {
             event.isCancelled = true
             return
         }
@@ -71,8 +72,16 @@ class SwordListener(private val healthComponent: HealthComponent, private val po
         Bukkit.broadcast(formatMessage("<red>${attacker.name} kradnie $points punktów od ${victim.name}!"))
         //particle
 
-        Bukkit.getServer().onlinePlayers.forEach{
-            it.spawnParticle(Particle.BLOCK_CRACK, loc, 150, 0.2, 0.2, 0.2, Bukkit.getServer().createBlockData(Material.REDSTONE_BLOCK))
+        Bukkit.getServer().onlinePlayers.forEach {
+            it.spawnParticle(
+                Particle.BLOCK_CRACK,
+                loc,
+                150,
+                0.2,
+                0.2,
+                0.2,
+                Bukkit.getServer().createBlockData(Material.REDSTONE_BLOCK)
+            )
         }
 
     }

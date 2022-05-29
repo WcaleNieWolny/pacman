@@ -9,11 +9,11 @@ import org.bukkit.potion.PotionEffectType
 import pl.wolny.pacman.formatMessage
 import pl.wolny.pacman.powerup.PowerUp
 
-class JumpBoostListener(private val spawnPoints: MutableList<Location>): Listener {
+class JumpBoostListener(private val spawnPoints: MutableList<Location>) : Listener {
 
     @EventHandler
     private fun onJumpBoostActivate(event: PowerupActivateEvent) {
-        if(event.powerUp != PowerUp.JUMP_BOOST){
+        if (event.powerUp != PowerUp.JUMP_BOOST) {
             return
         }
         val player = event.player ?: return
@@ -23,15 +23,16 @@ class JumpBoostListener(private val spawnPoints: MutableList<Location>): Listene
 
     @EventHandler
     private fun onJumpBoostDeactivate(event: PowerupDeactivateEvent) {
-        if(event.powerUp != PowerUp.JUMP_BOOST){
+        if (event.powerUp != PowerUp.JUMP_BOOST) {
             return
         }
         val player = event.player ?: return
         Bukkit.broadcast(formatMessage("<red>${event.player.name} traci umiejętności królika!"))
-        if(player.location.y >= -57){
+        if (player.location.y >= -57) {
             //Push player to edge
             val location = player.location
-            val nearSpawnPoint: Location = spawnPoints.map { Pair(it, it.distance(location)) }.sortedBy { it.second }.first().first //Push player to that location
+            val nearSpawnPoint: Location = spawnPoints.map { Pair(it, it.distance(location)) }.sortedBy { it.second }
+                .first().first //Push player to that location
             val vector = nearSpawnPoint.toVector()
             vector.subtract(location.toVector())
             vector.multiply(0.6)
