@@ -27,7 +27,11 @@ class PacmanCommand(private val gameService: GameService, private val powerUpCom
                 sender.sendMessage(formatMessage("<green>Rejestruję pacmana!"))
             }
             "start" -> {
-                gameService.start()
+                if (sender !is Player) {
+                    sender.sendMessage(formatMessage("<red>Nie jesteś graczem aby to zrobić!"))
+                    return true
+                }
+                gameService.start(sender)
                 sender.sendMessage(formatMessage("<green>Startuję grę!"))
             }
             "halt" -> {

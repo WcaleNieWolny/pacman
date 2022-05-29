@@ -5,8 +5,10 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import pl.wolny.pacman.entity.PacmanController
-import pl.wolny.pacman.health.PacmanCollisionListener
+import pl.wolny.pacman.health.HealthComponent
 import pl.wolny.pacman.point.PointComponent
 import pl.wolny.pacman.powerup.PowerUpComponent
 import pl.wolny.pacman.powerup.event.FreePointListener
@@ -21,16 +23,17 @@ class GameService(private val plugin: JavaPlugin) {
     val powerUpComponent = PowerUpComponent()
     private val gameSpawnPointsComponent = GameSpawnPointsComponent()
     private val pointComponent = PointComponent(plugin, gameSpawnPointsComponent.spawnPoints, powerUpComponent)
-    private val pacmanCollisionListener = PacmanCollisionListener(gameSpawnPointsComponent.spawnPoints, pacmanController)
+    private val healthComponent = HealthComponent(gameSpawnPointsComponent.spawnPoints, pacmanController)
 
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)
         Bukkit.getPluginManager().registerEvents(KillablePacmanListener(pacmanController), plugin)
         Bukkit.getPluginManager().registerEvents(JumpBoostListener(gameSpawnPointsComponent.spawnPoints), plugin)
         Bukkit.getPluginManager().registerEvents(FreePointListener(pointComponent), plugin)
-        Bukkit.getPluginManager().registerEvents(SwordListener(), plugin)
+        Bukkit.getPluginManager().registerEvents(TexturePackListener(), plugin)
+        Bukkit.getPluginManager().registerEvents(SwordListener(healthComponent, pointComponent), plugin)
         Bukkit.getPluginManager().registerEvents(pointComponent, plugin)
-        Bukkit.getPluginManager().registerEvents(pacmanCollisionListener, plugin)
+        Bukkit.getPluginManager().registerEvents(healthComponent, plugin)
         gameSpawnPointsComponent.init()
     }
 
@@ -41,7 +44,9 @@ class GameService(private val plugin: JavaPlugin) {
         giveItems(player)
     }
 
-    fun start() {
+    fun start(player: Player) {
+
+        prepareServer(player)
 
         gameTimer.register(pacmanController)
         gameTimer.register(powerUpComponent)
@@ -49,38 +54,37 @@ class GameService(private val plugin: JavaPlugin) {
         gameTimer.start()
         pacmanController.running = true
         pointComponent.running = true
-        pacmanCollisionListener.running = true
+        healthComponent.running = true
+    }
+
+    private fun prepareServer(player: Player) {
+        Bukkit.getServer().onlinePlayers.forEach{
+            it.addPotionEffect(PotionEffect(PotionEffectType.GLOWING, 9999, 0, true, false))
+            it.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 9999, 0, true, false))
+            it.teleport(gameSpawnPointsComponent.spawnPoints.random())
+        }
     }
 
     fun halt() {
         gameTimer.stop()
         pacmanController.running = false
         pointComponent.running = false
-        pacmanCollisionListener.running = false
+        healthComponent.running = false
         pacmanController.clear()
         pointComponent.clear()
         gameSpawnPointsComponent.spawnPoints.clear()
+
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().consoleSender, "minecraft:effect clear @a")
     }
 
     private fun giveItems(player: Player) {
         val item = ItemStack(Material.PAPER)
         val meta = item.itemMeta
-
-        meta.setCustomModelData(1)
-        item.itemMeta = meta
-        player.inventory.setItem(6, item)
-
-        meta.setCustomModelData(2)
-        item.itemMeta = meta
-        player.inventory.setItem(7, item)
-
-        meta.setCustomModelData(3)
-        item.itemMeta = meta
-        player.inventory.setItem(5, item)
-
-        meta.setCustomModelData(4)
-        item.itemMeta = meta
-        player.inventory.setItem(8, item)
+        for (i in 1..4){
+            meta.setCustomModelData(1)
+            item.itemMeta = meta
+            player.inventory.setItem(5+i, item)
+        }
     }
 
 }

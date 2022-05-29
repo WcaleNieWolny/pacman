@@ -2,6 +2,7 @@ package pl.wolny.pacman.powerup.event
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -65,6 +66,10 @@ class KillablePacmanListener(private val pacmanController: PacmanController) : L
                     v.blocks.addAll(blocks)
                     v.direction = PacmanDirection.RIGHT
                 }
+            }
+
+            Bukkit.getServer().onlinePlayers.forEach{
+                it.spawnParticle(Particle.EXPLOSION_LARGE, block.location, 400, 0.75, 0.75, 0.75)
             }
         }
     }

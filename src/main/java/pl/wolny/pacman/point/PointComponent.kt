@@ -106,6 +106,8 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         renderScoreBoard()
     }
 
+    fun points(player: Player): Int = playerPoints.first { it.uuid == player.uniqueId }.point
+
     @EventHandler
     private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         if(!running){

@@ -4,6 +4,7 @@ import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -15,10 +16,10 @@ import pl.wolny.pacman.formatMessage
 import java.time.Duration
 import java.util.UUID
 
-class PacmanCollisionListener(private val spawnPoints: MutableList<Location>, private val pacmanController: PacmanController): Listener {
+class HealthComponent(private val spawnPoints: MutableList<Location>, private val pacmanController: PacmanController): Listener {
 
     var running = false
-    private val healthMap = mutableMapOf<UUID, Int>()
+    val healthMap = mutableMapOf<UUID, Int>()
 
     @EventHandler
     private fun onPacmanCollision(event: PacmanCollisionEvent){
@@ -59,14 +60,23 @@ class PacmanCollisionListener(private val spawnPoints: MutableList<Location>, pr
         }
 
         val player = event.player
+        kill(player, event, true)
+    }
 
+    @EventHandler(ignoreCancelled = true)
+    private fun onPlayerDismount(event: EntityDismountEvent){
+        if(event.dismounted is Firework){
+            event.isCancelled = true
+        }
+    }
+
+    fun kill(player: Player, event: PlayerDeathEvent? = null, msg: Boolean = false){
+        event?.isCancelled = true
         var health = healthMap[player.uniqueId]
         if(health == null){
             healthMap[player.uniqueId] = 2
-            health = 2
         }else{
             if(health-1 == 0){
-                event.isCancelled = true
                 player.gameMode = GameMode.SPECTATOR
                 Bukkit.broadcast(formatMessage("☠ <red>${player.name} stracił wszystkie życia!"))
                 player.showTitle(Title.title(formatMessage("<red> UMARŁEŚ!"), formatMessage("Możesz teraz obserować grę"), Title.Times.of(
@@ -77,21 +87,14 @@ class PacmanCollisionListener(private val spawnPoints: MutableList<Location>, pr
             health--
             healthMap[player.uniqueId] = health
         }
-
-        event.isCancelled = true
         val loc = generateRespanLocation()
         player.health = 20.0
         player.teleport(loc)
         Bukkit.getServer().onlinePlayers.forEach{
             player.spawnParticle(Particle.DRAGON_BREATH, loc, 1500, 0.25, 0.1, 0.25 )
         }
-        Bukkit.broadcast(formatMessage("☠ <red>${player.name} odchodzi z hukiem! (<dark_red>♥<white>x<green>${health}<red>)"))
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    private fun onPlayerDismount(event: EntityDismountEvent){
-        if(event.dismounted is Firework){
-            event.isCancelled = true
+        if(msg){
+            Bukkit.broadcast(formatMessage("☠ <red>${player.name} odchodzi z hukiem! (<dark_red>♥<white>x<green>${healthMap[player.uniqueId]}<red>)"))
         }
     }
 }
