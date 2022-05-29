@@ -15,6 +15,7 @@ import pl.wolny.pacman.powerup.event.FreePointListener
 import pl.wolny.pacman.powerup.event.JumpBoostListener
 import pl.wolny.pacman.powerup.event.KillablePacmanListener
 import pl.wolny.pacman.powerup.event.SwordListener
+import pl.wolny.pacman.sound.SoundComponent
 
 class GameService(private val plugin: JavaPlugin) {
 
@@ -24,6 +25,7 @@ class GameService(private val plugin: JavaPlugin) {
     private val gameSpawnPointsComponent = GameSpawnPointsComponent()
     private val pointComponent = PointComponent(plugin, gameSpawnPointsComponent.spawnPoints, powerUpComponent)
     private val healthComponent = HealthComponent(gameSpawnPointsComponent.spawnPoints, pacmanController)
+    private val soundComponent = SoundComponent(pacmanController)
 
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)
@@ -51,10 +53,12 @@ class GameService(private val plugin: JavaPlugin) {
         gameTimer.register(pacmanController)
         gameTimer.register(powerUpComponent)
         gameTimer.register(pointComponent)
+        gameTimer.register(soundComponent)
         gameTimer.start()
         pacmanController.running = true
         pointComponent.running = true
         healthComponent.running = true
+        soundComponent.running = true
     }
 
     private fun prepareServer(player: Player) {
@@ -70,6 +74,7 @@ class GameService(private val plugin: JavaPlugin) {
         pacmanController.running = false
         pointComponent.running = false
         healthComponent.running = false
+        soundComponent.running = false
         pacmanController.clear()
         pointComponent.clear()
         gameSpawnPointsComponent.spawnPoints.clear()
