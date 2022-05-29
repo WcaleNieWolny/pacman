@@ -55,6 +55,12 @@ class PacmanController : Listener, GameObject {
         }
 
         val pacman = pacmanMap[event.player.uniqueId] ?: return
+
+        if(pacman.freeze != 0){
+            event.isCancelled = true
+            return
+        }
+
         val itemCustomModel = item.itemMeta.customModelData
         val direction = PacmanDirection.fromID(itemCustomModel)
 
@@ -197,7 +203,7 @@ class PacmanController : Listener, GameObject {
     fun checkPlayerCollision(pacman: PacmanEntity){
         val loc1 = pacman.location.clone()
         val loc2 = pacman.location.clone()
-        val vector = Vector(3, 1, 3)
+        val vector = Vector(3, 3, 3)
         loc1.add(vector)
         loc2.subtract(vector)
         pacman.location.world.getNearbyEntities(BoundingBox.of(loc1, loc2)){
@@ -209,6 +215,10 @@ class PacmanController : Listener, GameObject {
 
     override fun tick() {
         for (pair in pacmanMap) {
+            if(pair.value.freeze != 0){
+                pair.value.freeze -=2
+                continue
+            }
             move(pair.value.nextDirection, pair.value)
         }
     }
@@ -223,6 +233,10 @@ class PacmanController : Listener, GameObject {
 
     fun handleKillable() {
         killablePacmanChange = true
+    }
+
+    fun freezePacman(pacmanEntity: PacmanEntity) {
+        pacmanEntity.freeze = 60
     }
 
 }

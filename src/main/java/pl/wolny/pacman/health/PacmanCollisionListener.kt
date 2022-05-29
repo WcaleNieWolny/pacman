@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.util.Vector
+import org.spigotmc.event.entity.EntityDismountEvent
 import pl.wolny.pacman.entity.PacmanController
 import pl.wolny.pacman.formatMessage
 import java.time.Duration
@@ -35,6 +36,7 @@ class PacmanCollisionListener(private val spawnPoints: MutableList<Location>, pr
             meta.addEffect(FireworkEffect.builder().withColor(Color.RED).build())
             firework.fireworkMeta = meta
             firework.addPassenger(player)
+            pacmanController.freezePacman(event.pacmanEntity)
             return
         }
         player.health -= 10
@@ -84,6 +86,12 @@ class PacmanCollisionListener(private val spawnPoints: MutableList<Location>, pr
             player.spawnParticle(Particle.DRAGON_BREATH, loc, 1500, 0.25, 0.1, 0.25 )
         }
         Bukkit.broadcast(formatMessage("☠ <red>${player.name} odchodzi z hukiem! (<dark_red>♥<white>x<green>${health}<red>)"))
+    }
 
+    @EventHandler(ignoreCancelled = true)
+    private fun onPlayerDismount(event: EntityDismountEvent){
+        if(event.dismounted is Firework){
+            event.isCancelled = true
+        }
     }
 }

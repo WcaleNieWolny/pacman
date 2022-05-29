@@ -9,7 +9,10 @@ import pl.wolny.pacman.entity.PacmanController
 import pl.wolny.pacman.health.PacmanCollisionListener
 import pl.wolny.pacman.point.PointComponent
 import pl.wolny.pacman.powerup.PowerUpComponent
+import pl.wolny.pacman.powerup.event.FreePointListener
+import pl.wolny.pacman.powerup.event.JumpBoostListener
 import pl.wolny.pacman.powerup.event.KillablePacmanListener
+import pl.wolny.pacman.powerup.event.SwordListener
 
 class GameService(private val plugin: JavaPlugin) {
 
@@ -23,6 +26,9 @@ class GameService(private val plugin: JavaPlugin) {
     fun init() {
         Bukkit.getPluginManager().registerEvents(pacmanController, plugin)
         Bukkit.getPluginManager().registerEvents(KillablePacmanListener(pacmanController), plugin)
+        Bukkit.getPluginManager().registerEvents(JumpBoostListener(gameSpawnPointsComponent.spawnPoints), plugin)
+        Bukkit.getPluginManager().registerEvents(FreePointListener(pointComponent), plugin)
+        Bukkit.getPluginManager().registerEvents(SwordListener(), plugin)
         Bukkit.getPluginManager().registerEvents(pointComponent, plugin)
         Bukkit.getPluginManager().registerEvents(pacmanCollisionListener, plugin)
         gameSpawnPointsComponent.init()

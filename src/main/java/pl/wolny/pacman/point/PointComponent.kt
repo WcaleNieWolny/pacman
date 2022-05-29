@@ -99,6 +99,13 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         }
     }
 
+    fun addPoints(player: Player, points: Int = 1){
+        val powerPlayer = playerPoints.filter { it.uuid == player.uniqueId }[0]
+        powerPlayer.point = powerPlayer.point + points
+        playerPoints.sortBy { it.point }
+        renderScoreBoard()
+    }
+
     @EventHandler
     private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         if(!running){
@@ -140,10 +147,7 @@ class PointComponent(plugin: JavaPlugin, private val spawnPoints: MutableList<Lo
         event.item.remove()
 
         if(item.type == Material.GOLD_NUGGET){
-            val powerPlayer = playerPoints.filter { it.uuid == player.uniqueId }[0]
-            powerPlayer.point = powerPlayer.point + 1
-            playerPoints.sortBy { it.point }
-            renderScoreBoard()
+            addPoints(player)
         }else{
             powerUpComponent.activate(PowerUp.values().random(), player)
         }
